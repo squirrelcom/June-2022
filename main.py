@@ -1,6 +1,9 @@
 import re, sqlite3; from collections import Counter; from string import punctuation; from math import sqrt
 import pyttsx3
 
+import speech_recognition as sr
+
+listener = sr.Recognizer()
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
 engine.setProperty('voice', 'english_rp+f3')
@@ -42,11 +45,15 @@ def get_words(text):
     wordsList = wordsRegexp.findall(text.lower())
     return Counter(wordsList).items()
 
-B = 'Hello.'
+B = 'Loading Brain Disk. JuneAI. Copyright Unit biotech 2022. SMARTAI GEN 1.'
 while True:
     talk(f'{B}')
-    print(f'June: {B}')
-    H = input("You: ")
+    print(f'{B}')
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        audio = r.listen(source)
+        H = r.recognize_google(audio)
+    print(H)
     if H in [None, '' ' ', '  ', '\n']:
         pass
     words = get_words(B)
@@ -71,3 +78,4 @@ while True:
         row = cursor.fetchone()
     B = row[1]
     cursor.execute('UPDATE sentences SET used=used+1 WHERE rowid=?', (row[0],))
+
